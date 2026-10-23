@@ -1,0 +1,92 @@
+name: fullstack-assessment
+
+x-app: &app
+  build: .
+  image: fullstack-assessment:local
+  volumes:
+    - .:/app
+  environment: &environment
+    POSTGRES_HOST: db
+    POSTGRES_DB: assessment
+    POSTGRES_USER: assessment
+    CELERY_BROKER_URL: redis://redis:6379/0
+    CELERY_RESULT_BACKEND: redis://redis:6379/1
+    RATE_REDIS_URL: redis://redis:6379/2
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: assessment
+      POSTGRES_USER: assessment
+      # Local-only container network. No database port is published to the host.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U assessment -d assessment"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "always", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  migrate:
+    <<: *app
+    command: ["python", "manage.py", "migrate", "--noinput"]
+
+  web:
+    <<: *app
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/')"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    <<: *app
+    command: ["celery", "-A", "config", "worker", "--loglevel=INFO", "--concurrency=2"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    stop_grace_period: 50s
+
+  beat:
+    <<: *app
+    command: ["celery", "-A", "config", "beat", "--loglevel=INFO", "--schedule=/tmp/assessment-beat"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  tests:
+    <<: *app
+    profiles: ["test"]
+    environment:
+      <<: *environment
+      CELERY_BROKER_URL: redis://redis:6379/5
+      CELERY_RESULT_BACKEND: redis://redis:6379/6
+      RATE_REDIS_URL: redis://redis:6379/7
+    command: ["pytest", "-q", "--junitxml=artifacts/test-results.xml"]
+
+volumes:
+  postgres_data:
+  redis_data:

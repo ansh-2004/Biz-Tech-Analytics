@@ -1,0 +1,35 @@
+{
+  "django": "5.2.18",
+  "database": "postgresql",
+  "profiler": "django-silk",
+  "same_response": true,
+  "before": {
+    "path": "/api/orders/summary/broken/",
+    "silk_request_id": "9cc22e06-ca1a-424e-9ef3-9d3bd9022db9",
+    "recorded_at": "2026-10-23T10:45:44.756896+00:00",
+    "order_count": 250,
+    "total_queries": 1003,
+    "order_queries": 1001,
+    "request_ms": 6247.22,
+    "sql_ms": 739.57,
+    "sample_sql": [
+      "SELECT \"orders_order\".\"id\", \"orders_order\".\"user_id\", \"orders_order\".\"shipping_address_id\", \"orders_order\".\"created_at\" FROM \"orders_order\" WHERE \"orders_order\".\"user_id\" = 1 ORDER BY \"orders_order\".\"id\" ASC",
+      "SELECT \"orders_orderitem\".\"id\", \"orders_orderitem\".\"order_id\", \"orders_orderitem\".\"product_id\", \"orders_orderitem\".\"quantity\", \"orders_orderitem\".\"unit_price\" FROM \"orders_orderitem\" WHERE \"orders_orderitem\".\"order_id\" = 1",
+      "SELECT \"orders_product\".\"id\", \"orders_product\".\"name\" FROM \"orders_product\" WHERE \"orders_product\".\"id\" = 1 LIMIT 21"
+    ]
+  },
+  "after": {
+    "path": "/api/orders/summary/",
+    "silk_request_id": "fa2bbe71-cb5c-4884-9219-0f188a23595c",
+    "recorded_at": "2026-10-23T10:45:55.637143+00:00",
+    "order_count": 250,
+    "total_queries": 4,
+    "order_queries": 2,
+    "request_ms": 45.44,
+    "sql_ms": 7.47,
+    "sample_sql": [
+      "SELECT \"orders_order\".\"id\", \"orders_order\".\"user_id\", \"orders_order\".\"shipping_address_id\", \"orders_order\".\"created_at\", \"orders_address\".\"id\", \"orders_address\".\"city\" FROM \"orders_order\" INNER JOIN \"orders_address\" ON (\"orders_order\".\"shipping_address_id\" = \"orders_address\".\"id\") WHERE \"orders_order\".\"user_id\" = 1 ORDER BY \"orders_order\".\"id\" ASC",
+      "SELECT \"orders_orderitem\".\"id\", \"orders_orderitem\".\"order_id\", \"orders_orderitem\".\"product_id\", \"orders_orderitem\".\"quantity\", \"orders_orderitem\".\"unit_price\", \"orders_product\".\"id\", \"orders_product\".\"name\" FROM \"orders_orderitem\" INNER JOIN \"orders_product\" ON (\"orders_orderitem\".\"product_id\" = \"orders_product\".\"id\") WHERE \"orders_orderitem\".\"order_id\" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250)"
+    ]
+  }
+}
