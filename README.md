@@ -125,8 +125,6 @@ SIGKILL behaviour, and limits of the mock provider.
 [ANSWERS.md](ANSWERS.md) contains Question A (Django Admin) and Question B
 (pagination), each within the requested 200–350 words.
 
-No screen recording is included. Section 4 is optional. A short set of commands and
-talking points is in [RECORDING.md](RECORDING.md) if you want to record the demo.
 
 ## Project layout
 
@@ -146,12 +144,5 @@ talking points is in [RECORDING.md](RECORDING.md) if you want to record the demo
 docker compose down
 ```
 
-This preserves the database and Redis volumes. Do not add `-v` unless you intend to
-discard this demo's saved data.
-
-This setup is for local assessment review. PostgreSQL uses trust authentication on
-the unexposed Compose network, Django uses its development server, and the web port
-binds only to localhost. A random Django secret is generated per process unless
-`DJANGO_SECRET_KEY` is supplied; restarting the web process invalidates its sessions.
-No credentials or real customer data are included. The assessment Word document is
-left out of Git because the repository only needs the implementation and answers.
+This preserves the database and Redis volumes. 
+ 
